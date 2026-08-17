@@ -7,7 +7,7 @@ function format_price($price)
 
 function get_time_left($date)
 {
-  date_default_timezone_set('Euroepe/Moscow');
+  date_default_timezone_set('Europe/Moscow');
   $finale_date = date_create($date);
   $cur_date = date_create();
 
