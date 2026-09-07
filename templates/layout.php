@@ -54,9 +54,9 @@ $user_name = 'Серега'; // укажите здесь ваше имя
   <footer class="main-footer">
     <nav class="nav">
       <ul class="nav__list container">
-        <?php foreach ($categories as $cat => $val): ?>
+        <?php foreach ($categories as $category): ?>
           <li class="nav__item">
-            <a href="pages/all-lots.html"><?= $val ?></a>
+            <a href="pages/all-lots.html"><?= htmlspecialchars($category['name_category']) ?></a>
           </li>
         <?php endforeach ?>
       </ul>
