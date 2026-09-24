@@ -51,3 +51,8 @@ $goods = [
     'expiration' => date('Y-m-d', strtotime('+1 day'))
   ],
 ];
+
+$is_auth = rand(0, 1);
+
+$user_name = 'Серега';
+//console_log($user_name);
