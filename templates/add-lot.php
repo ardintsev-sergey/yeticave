@@ -42,7 +42,7 @@ $escape = static function ($value) {
   <div class="form__item form__item--file <?= $classname ?>">
     <label>Изображение <sup>*</sup></label>
     <div class="form__input-file" id="lot-img-drop">
-      <input class="visually-hidden" type="file" id="lot-img" name="lot-img" accept=".jpg,.jpeg,.png">
+      <input class="visually-hidden" type="file" id="lot-img" name="lot-img">
       <label for="lot-img">Добавить</label>
       <span class="form__file-name" id="lot-img-name" aria-live="polite">Файл не выбран</span>
       <span class="form__file-hint">или перетащите JPG/PNG сюда</span>

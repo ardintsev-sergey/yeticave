@@ -117,7 +117,7 @@ $user_name = 'Серега'; // укажите здесь ваше имя
   </footer>
 
   <script src="/flatpickr.js?v=2"></script>
-  <script src="/script.js?v=3"></script>
+  <script src="/script.js?v=4"></script>
 </body>
 
 </html>
