@@ -9,8 +9,9 @@ $user_name = 'Серега'; // укажите здесь ваше имя
 <head>
   <meta charset="UTF-8">
   <title><?= $title ?></title>
-  <link href="../css/normalize.min.css" rel="stylesheet">
-  <link href="../css/style.css" rel="stylesheet">
+  <link href="/css/normalize.min.css" rel="stylesheet">
+  <link href="/css/style.css?v=3" rel="stylesheet">
+  <link href="/css/flatpickr.min.css?v=2" rel="stylesheet">
 </head>
 
 <body>
@@ -26,7 +27,7 @@ $user_name = 'Серега'; // укажите здесь ваше имя
           <input type="search" name="search" placeholder="Поиск лота">
           <input class="main-header__search-btn" type="submit" name="find" value="Найти">
         </form>
-        <a class="main-header__add-lot button" href="pages/add-lot.html">Добавить лот</a>
+        <a class="main-header__add-lot button" href="/add.php">Добавить лот</a>
 
         <nav class="user-menu">
           <?php if ($is_auth === 1): ?>
@@ -100,7 +101,7 @@ $user_name = 'Серега'; // укажите здесь ваше имя
           </svg>
         </a>
       </div>
-      <a class="main-footer__add-lot button" href="add-lot.html">Добавить лот</a>
+      <a class="main-footer__add-lot button" href="/add.php">Добавить лот</a>
       <div class="main-footer__developed-by">
         <span class="visually-hidden">Разработано:</span>
         <a class="logo-academy" href="https://htmlacademy.ru/intensive/php">
@@ -115,8 +116,8 @@ $user_name = 'Серега'; // укажите здесь ваше имя
     </div>
   </footer>
 
-  <script src="flatpickr.js"></script>
-  <script src="script.js"></script>
+  <script src="/flatpickr.js?v=2"></script>
+  <script src="/script.js?v=3"></script>
 </body>
 
 </html>

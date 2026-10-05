@@ -18,8 +18,9 @@ function is_date_valid(string $date): bool
 {
     $format_to_check = 'Y-m-d';
     $dateTimeObj = date_create_from_format($format_to_check, $date);
+    $errors = date_get_last_errors();
 
-    return $dateTimeObj !== false && array_sum(date_get_last_errors()) === 0;
+    return $dateTimeObj !== false && ($errors === false || array_sum($errors) === 0);
 }
 
 /**
@@ -150,7 +151,7 @@ function get_categories($con)
     if (!$con) {
         $error = mysqli_connect_error();
     } else {
-        $sql = "SELECT character_code, name_category FROM categories";
+        $sql = "SELECT id, character_code, name_category FROM categories";
         $result = mysqli_query($con, $sql);
         if ($result) {
             $categories = mysqli_fetch_all($result, MYSQLI_ASSOC);
@@ -172,3 +173,51 @@ function get_arrow($result_query)
     }
     return $arrow;
 }
+
+/**
+ * Валидирует поле категории, если такой категории нет в списке
+ * возвращает сообщение об этом
+ * @param int $id категория, которую ввел пользователь в форму
+ * @param array $allowed_list Список существующих категорий
+ * @return string Текст сообщения об ошибке
+ */
+function validate_category($id, $allowed_list)
+{
+    if (!in_array($id, $allowed_list)) {
+        return "Указана несуществующая категория";
+    }
+}
+/**
+ * Проверяет что содержимое поля является числом больше нуля
+ * @param string $num число которое ввел пользователь в форму
+ * @return string Текст сообщения об ошибке
+ */
+function validate_number($num)
+{
+    if ($num !== '') {
+        $options = ['options' => ['min_range' => 1]];
+        if (filter_var($num, FILTER_VALIDATE_INT, $options) !== false) {
+            return null;
+        }
+        return "Содержимое поля должно быть целым числом больше нуля";
+    }
+};
+
+/**
+ * Проверяет что дата окончания торгов не меньше одного дня
+ * @param string $date дата которую ввел пользователь в форму
+ * @return string Текст сообщения об ошибке
+ */
+function validate_date($date)
+{
+    if (is_date_valid($date)) {
+        $date_finish = date_create_immutable($date);
+        $tomorrow = date_create_immutable('tomorrow');
+
+        if ($date_finish < $tomorrow) {
+            return "Дата должна быть больше текущей не менее чем на один день";
+        };
+    } else {
+        return "Содержимое поля «дата завершения» должно быть датой в формате «ГГГГ-ММ-ДД»";
+    }
+};
