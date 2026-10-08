@@ -221,3 +221,21 @@ function validate_date($date)
         return "Содержимое поля «дата завершения» должно быть датой в формате «ГГГГ-ММ-ДД»";
     }
 };
+
+
+function validate_email($email)
+{
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return "Email должен быть корректным";
+    }
+};
+
+function validate_length($value, $min, $max)
+{
+    if ($value) {
+        $len = strlen($value);
+        if ($len < $min or $len > $max) {
+            return "Значение должно быть от $min до $max символов";
+        }
+    }
+}

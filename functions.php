@@ -74,3 +74,27 @@ function db_get_prepare_stmt_version($link, $sql, $data = [])
 
   return $stmt;
 }
+
+
+function get_users_data($con)
+{
+  if (!$con) {
+    $error = mysqli_connect_error();
+    return $error;
+  } else {
+    $sql = "SELECT email, user_name FROM users";
+    $result = mysqli_query($con, $sql);
+    if ($result) {
+      $users_data = get_arrow($result);
+      return $users_data;
+    }
+    $error = mysqli_error($con);
+    return $error;
+  }
+}
+
+
+function get_query_create_user()
+{
+  return "INSERT INTO users (date_registration, email, user_password, user_name, contacts) VALUES (NOW(), ?, ?, ?, ?)";
+}
