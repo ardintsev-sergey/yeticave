@@ -165,6 +165,7 @@ function get_categories($con)
 
 function get_arrow($result_query)
 {
+    $arrow = null;
     $row = mysqli_num_rows($result_query);
     if ($row === 1) {
         $arrow = mysqli_fetch_assoc($result_query);

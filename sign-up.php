@@ -9,89 +9,90 @@ $categories = get_categories($con);
 $user = [];
 $errors = [];
 
-$page_content = include_template("main-sign-up.php", [
-  "categories" => $categories,
-  "user" => $user,
-  "errors" => $errors
-]);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  $user = filter_input_array(INPUT_POST, [
+    'email' => FILTER_DEFAULT,
+    'password' => FILTER_DEFAULT,
+    'name' => FILTER_DEFAULT,
+    'message' => FILTER_DEFAULT
+  ], true) ?: [];
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  $required = ["email", "password", "name", "message"];
-  $errors = [];
+  $user['email'] = trim($user['email'] ?? '');
+  $user['password'] = $user['password'] ?? '';
+  $user['name'] = trim($user['name'] ?? '');
+  $user['message'] = trim($user['message'] ?? '');
 
+  $required = ['email', 'password', 'name', 'message'];
   $rules = [
-    "email" => function ($value) {
+    'email' => function ($value) {
       return validate_email($value);
     },
-    "password" => function ($value) {
+    'password' => function ($value) {
       return validate_length($value, 6, 8);
     },
-    "message" => function ($value) {
+    'message' => function ($value) {
       return validate_length($value, 12, 1000);
     }
   ];
 
-  $user = filter_input_array(INPUT_POST, [
-    "email" => FILTER_DEFAULT,
-    "password" => FILTER_DEFAULT,
-    "name" => FILTER_DEFAULT,
-    "message" => FILTER_DEFAULT
-  ], true);
+  foreach ($required as $field) {
+    $value = $user[$field];
 
-  foreach ($user as $field => $value) {
-    if (isset($rules[$field])) {
-      $rule = $rules[$field];
-      $errors[$field] = $rule($value);
-    }
-    if (in_array($field, $required) && empty($value)) {
+    if ($value === '') {
       $errors[$field] = "Поле $field нужно заполнить";
+    } elseif (isset($rules[$field])) {
+      $errors[$field] = $rules[$field]($value);
     }
   }
 
   $errors = array_filter($errors);
 
-  if (count($errors)) {
-    $page_content = include_template("main-sign-up.php", [
-      "categories" => $categories,
-      "user" => $user,
-      "errors" => $errors
-    ]);
-  } else {
-    $user_data = get_users_data($con);
-    $emails = array_column($user_data, "email");
-    $names = array_column($user_data, "user_name");
-    if (in_array($user["email"], $emails)) {
-      $errors["email"] = "Пользователь с таким email уже существует";
-    }
-    if (in_array($user["name"], $names)) {
-      $errors["name"] = "Пользователь с таким именем уже существует";
-    }
-    if (count($errors)) {
-      $page_content = include_template("main-sign-up.php", [
-        "categories" => $categories,
-        "user" => $user,
-        "errors" => $errors
-      ]);
-    } else {
-      $sql = get_query_create_user();
-      $user["password"] = password_hash($user["password"], PASSWORD_DEFAULT);
-      $stmt = db_get_prepare_stmt_version($con, $sql, $user);
-      $res = mysqli_stmt_execute($stmt);
+  if (!$errors) {
+    $users_data = get_users_data($con);
+    $users_data = is_array($users_data) ? $users_data : [];
+    $emails = array_column($users_data, 'email');
+    $names = array_column($users_data, 'user_name');
+
+    if (in_array($user['email'], $emails, true)) {
+      $errors['email'] = 'Пользователь с таким email уже существует';
     }
 
-    if ($res) {
-      header("Location: /login.php");
-    } else {
-      $error = mysqli_error($con);
+    if (in_array($user['name'], $names, true)) {
+      $errors['name'] = 'Пользователь с таким именем уже существует';
     }
+  }
+
+  if (!$errors) {
+    $sql = get_query_create_user();
+    $data = [
+      $user['email'],
+      password_hash($user['password'], PASSWORD_DEFAULT),
+      $user['name'],
+      $user['message']
+    ];
+    $stmt = db_get_prepare_stmt_version($con, $sql, $data);
+
+    if (mysqli_stmt_execute($stmt)) {
+      header('Location: /login.php');
+      exit;
+    }
+
+    $errors['form'] = 'Не удалось зарегистрировать пользователя';
   }
 }
 
-$layout_content = include_template("layout.php", [
-  "content" => $page_content,
-  "categories" => $categories,
-  "title" => "Регистрация",
-  "is_auth" => $is_auth,
-  "user_name" => $user_name,
+$page_content = include_template('main-sign-up.php', [
+  'categories' => $categories,
+  'user' => $user,
+  'errors' => $errors
 ]);
+
+$layout_content = include_template('layout.php', [
+  'content' => $page_content,
+  'categories' => $categories,
+  'title' => 'Регистрация',
+  'is_auth' => $is_auth,
+  'user_name' => $user_name
+]);
+
 print($layout_content);

@@ -98,3 +98,20 @@ function get_query_create_user()
 {
   return "INSERT INTO users (date_registration, email, user_password, user_name, contacts) VALUES (NOW(), ?, ?, ?, ?)";
 }
+
+function get_login($con, $email)
+{
+  if (!$con) {
+    return null;
+  }
+
+  $sql = "SELECT id, email, user_name, user_password FROM users WHERE email = ? LIMIT 1";
+  $stmt = db_get_prepare_stmt_version($con, $sql, [$email]);
+
+  if (!mysqli_stmt_execute($stmt)) {
+    return null;
+  }
+
+  $result = mysqli_stmt_get_result($stmt);
+  return $result ? mysqli_fetch_assoc($result) : null;
+}

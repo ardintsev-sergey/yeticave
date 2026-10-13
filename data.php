@@ -1,4 +1,8 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+  session_start();
+}
+
 $categories = [
   'boards' => 'Доски и лыжи',
   'attachment' => 'Крепления',
@@ -52,7 +56,5 @@ $goods = [
   ],
 ];
 
-$is_auth = rand(0, 1);
-
-$user_name = 'Серега';
-//console_log($user_name);
+$user_name = $_SESSION["name"] ?? "";
+$is_auth = !empty($user_name);
