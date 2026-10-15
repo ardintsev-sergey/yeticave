@@ -115,3 +115,34 @@ function get_login($con, $email)
   $result = mysqli_stmt_get_result($stmt);
   return $result ? mysqli_fetch_assoc($result) : null;
 }
+
+function get_count_lots($link, $words)
+{
+  $sql = "SELECT COUNT(*) FROM lots WHERE MATCH(title, lot_description) AGAINST(?);";
+  $stmt = mysqli_prepare($link, $sql);
+  mysqli_stmt_bind_param($stmt, 's', $words);
+  mysqli_stmt_execute($stmt);
+  $res = mysqli_stmt_get_result($stmt);
+  if ($res) {
+    $count = mysqli_fetch_assoc($res)["cnt"];
+    return $count;
+  }
+  $error = mysqli_error($con);
+  return $error;
+}
+
+function get_found_lots($link, $words, $limit, $offset)
+{
+  $sql = "SELECT lots.id, lots.title, lots.start_price, lots.img, lots.date_finish, categories.name_category FROM lots JOIN categories ON lots.category_id = categories.id WHERE MATCH(title, lot_description) AGAINST(?) ORDER BY date_creation DESC LIMIT $limit OFFSET $offset;";
+
+  $stmt = mysqli_prepare($link, $sql);
+  mysqly_stmt_bind_param($stmt, 's', $words);
+  mysqli_stmt_execute($stmt);
+  $res = mysqli_stmt_get_result($stmt);
+  if ($res) {
+    $goods = get_arrow($res);
+    return $goods;
+  }
+  $error = mysqli_error($con);
+  return $error;
+}
